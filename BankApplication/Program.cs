@@ -283,7 +283,7 @@ namespace Program
                             {
                                 if (accountId == account.AccountId)
                                 {
-                                    Console.WriteLine($"Bank Balance of the Customer: {account.Balance}\n"+
+                                    Console.WriteLine($"Bank Balance of the Customer: {account.Balance} +{AdminServices.DefaultCurrency}\n"+
                                         $"Account Id of the Customer: {account.AccountId}");
                                     Console.WriteLine("------------------------------------");
                                 }
