@@ -86,8 +86,7 @@ namespace Program
                 Console.WriteLine("1.Add Bank");
                 Console.WriteLine("2.Create Staff");
                 Console.WriteLine("3.Display Staff");
-                Console.WriteLine("4.Add Default Currency");
-                Console.WriteLine("5.Exit");
+                Console.WriteLine("4.Exit");
                 Console.Write("Select Option: ");
                 int adminOption = Convert.ToInt32(Console.ReadLine());
                 switch (adminOption)
@@ -99,7 +98,9 @@ namespace Program
                         string bankLocation = Console.ReadLine();
                         Console.Write("Enter the IFSC code of the Bank: ");
                         string ifscCode = Console.ReadLine();
-                        AdminServices.AddBankAccount(bankName, bankLocation, ifscCode);
+                        Console.Write("Enter the Currency of the Bank: ");
+                        string currency = Console.ReadLine();
+                        AdminServices.AddBankAccount(bankName, bankLocation, ifscCode,currency);
                         break;
                     case 2:
                         Console.Write("Enter the Name of the Staff: ");
@@ -121,6 +122,9 @@ namespace Program
                         staffName = Console.ReadLine();
                         Console.Write("Enter the Password of the Staff: ");
                         staffPassword = Console.ReadLine();
+                        var Linq = BankDataList.BankList.Where(bank => bank.BankName == "sbi").FirstOrDefault();
+                        Console.WriteLine(Linq.BankName);
+                        
                         var staffInformation = AdminServices.DisplayStaff(staffName, staffPassword);
                         if (staffInformation.Name != null && staffInformation.Password != null)
                         {
@@ -134,11 +138,6 @@ namespace Program
                             Console.WriteLine("Staff Does Not Exists! Please Try Again");
                             Console.WriteLine("------------------------------------");
                         }
-                        break;
-                    case 4:
-                        Console.Write("Enter the Default Currency: ");
-                        string currency= Console.ReadLine();
-                        AdminServices.AddDefaultCurrency(currency);
                         break;
                     default:
                         exitFromTheAdmin = true;
@@ -283,7 +282,7 @@ namespace Program
                             {
                                 if (accountId == account.AccountId)
                                 {
-                                    Console.WriteLine($"Bank Balance of the Customer: {account.Balance} +{AdminServices.DefaultCurrency}\n"+
+                                    Console.WriteLine($"Bank Balance of the Customer: {account.Balance} {bankList.DefaultCurrency}\n"+
                                         $"Account Id of the Customer: {account.AccountId}");
                                     Console.WriteLine("------------------------------------");
                                 }
@@ -384,16 +383,11 @@ namespace Program
                         case 1:
                             Console.Write("Enter the Amount: ");
                             double amount = Convert.ToInt64(Console.ReadLine());
-                            if(AdminServices.DefaultCurrency == "Default Currency is not set")
-                            {
-                                Console.WriteLine("Default Currency is not set by Admin");
-                            }
-                            else
-                            {
-                                CustomerServices.DepositMoney(customerName, customerPassword, amount);
-                                Console.WriteLine("Amount Deposited Successfully!");
-                                Console.WriteLine("------------------------------------");
-                            }
+                            Console.Write("Enter the Currency: ");
+                            string currency = Console.ReadLine();
+                            CustomerServices.DepositMoney(customerName, customerPassword, amount, currency);
+                            Console.WriteLine("Amount Deposited Successfully!");
+                            Console.WriteLine("------------------------------------");
                             break;
                         case 2:
                             Console.Write("Enter the Amount: ");

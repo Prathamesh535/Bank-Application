@@ -8,7 +8,6 @@ namespace BankApplicationServices
 {
     public class AdminServices
     {
-        public static string DefaultCurrency="";
         public bool AdminLogin(string adminName,string adminPassword)
         {
             if (adminName == "Admin" && adminPassword == "Admin@123")
@@ -42,20 +41,9 @@ namespace BankApplicationServices
             }
             return staffInformation;
         }
-        public void AddBankAccount(string bankName, string bankLocation, string ifscCode)
+        public void AddBankAccount(string bankName, string bankLocation, string ifscCode,string currency)
         {
-            BankDataList.BankList.Add(new Bank(bankName, bankLocation, ifscCode, IdGenerator.BankIdPattern(bankName)));
-        }
-        public void AddDefaultCurrency(string currency)
-        {
-            if (currency == "")
-            {
-                DefaultCurrency = "Default Currency is not set";
-            }
-            else
-            {
-                DefaultCurrency = currency;
-            }
+            BankDataList.BankList.Add(new Bank(bankName, bankLocation, ifscCode, IdGenerator.BankIdPattern(bankName),currency));
         }
     }
 }

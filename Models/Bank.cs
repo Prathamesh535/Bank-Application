@@ -11,16 +11,18 @@ namespace Models
         public string BankName { get; set; }
         public string Location { get; set; }
         public string IFSC_Code { get; set; }
-        public string Bank_Id { get; set; }
+        public string BankId { get; set; }
+        public string DefaultCurrency { get; set; }
         public List<Account> Account { get; set; } = new List<Account>();
         public List<User> Users { get; set; } = new List<User>();
         public Bank() { }
-        public Bank(string bankName, string location, string ifsc_code, string id)
+        public Bank(string bankName, string location, string ifscCode, string id,string currency)
         {
             this.BankName = bankName;
             this.Location = location;
-            this.IFSC_Code = ifsc_code;
-            this.Bank_Id = id;
+            this.IFSC_Code = ifscCode;
+            this.BankId = id;
+            this.DefaultCurrency= currency;
         }
     }
 }

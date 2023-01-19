@@ -14,7 +14,7 @@ namespace BankApplicationServices
             {
                 foreach (var users in bank.Users)
                 {
-                    if (customerName == users.Name && customerPassword == users.Password && users.Type == UserTypes.Customer)
+                    if (customerName.Equals(users.Name) && customerPassword.Equals(users.Password) && users.Type.Equals(UserTypes.Customer))
                     {
                         return users.AccountId;
                     }
@@ -28,7 +28,7 @@ namespace BankApplicationServices
             {
                 foreach(var customer in bank.Account)
                 {
-                    if(customer.AccountId==accountId)
+                    if(customer.AccountId.Equals(accountId))
                     {
                         return true;
                     }
@@ -36,7 +36,7 @@ namespace BankApplicationServices
             }
             return false;
         }
-        public void DepositMoney(string customerName, string customerPassword, double amount)
+        public void DepositMoney(string customerName, string customerPassword, double amount, string currency)
         {
             string accountId=null,bankName=null;
             foreach (var bankList in BankDataList.BankList)
@@ -54,8 +54,21 @@ namespace BankApplicationServices
                 {
                     if(accountId==account.AccountId)
                     {
-                        account.Balance += amount;
-                        string comment = $"Amount of {amount} is Deposited to the account and the Transaction Id is {IdGenerator.TransactionId(bankName, customerName)}";
+                        if (bankList.DefaultCurrency.ToLower().Equals("rupees") && currency.ToLower().Equals("dollar"))
+                        {
+                            account.Balance += (81*amount);
+                            amount *= 81;
+                        }
+                        else if (bankList.DefaultCurrency.ToLower().Equals("dollar") && currency.ToLower().Equals("rupees"))
+                        {
+                            account.Balance += (0.012 * amount);
+                            amount *= 0.012;
+                        }
+                        else
+                        {
+                            account.Balance += amount;
+                        }
+                        string comment = $"Amount of {amount} {bankList.DefaultCurrency} is Deposited to the account and the Transaction Id is {IdGenerator.TransactionId(bankName, customerName)}";
                         account.TransactionList.Add(new Transaction(amount,IdGenerator.TransactionId(bankName,customerName),comment));
                     }
                 }
@@ -69,7 +82,7 @@ namespace BankApplicationServices
             {
                 foreach (var customerList in bankList.Users)
                 {
-                    if (customerList.Name.Equals(customerName) && customerList.Password.Equals(customerPassword) && customerList.Type==UserTypes.Customer)
+                    if (customerList.Name.Equals(customerName) && customerList.Password.Equals(customerPassword) && customerList.Type.Equals(UserTypes.Customer))
                     {
                         accountId = customerList.AccountId;
                         bankName = customerList.Bank;
@@ -81,7 +94,7 @@ namespace BankApplicationServices
                     if (account.AccountId == accountId)
                     {
                         account.Balance -= amount;
-                        string comment = $"Amount of {amount} is WithDrawed from the Account and the Transaction Id is {IdGenerator.TransactionId(bankName, customerName)}";
+                        string comment = $"Amount of {amount} {bankList.DefaultCurrency} is WithDrawed from the Account and the Transaction Id is {IdGenerator.TransactionId(bankName, customerName)}";
                         account.TransactionList.Add(new Transaction(amount, IdGenerator.TransactionId(bankName,customerName),comment));
                     }
                 }
@@ -92,7 +105,7 @@ namespace BankApplicationServices
             string senderAccountId = null, receiverAccountId = null,senderName=null,receiverName=null,senderBankName=null,receiverBankName=null;
             foreach (var bankList in BankDataList.BankList)
             {
-                var customerDetails = from customerProperties in bankList.Users where (customerProperties.Name == customerName && customerProperties.Password == customerPassword &&customerProperties.Type==UserTypes.Customer) select customerProperties;
+                var customerDetails = from customerProperties in bankList.Users where (customerProperties.Name.Equals(customerName) && customerProperties.Password.Equals(customerPassword) && customerProperties.Type==UserTypes.Customer) select customerProperties;
                 foreach (var sender in customerDetails)
                 {
                     senderAccountId = sender.AccountId;
@@ -104,8 +117,8 @@ namespace BankApplicationServices
                     if (receiver.Name == transferCustomerName && receiver.Bank == transferCustomerBankName)
                     {
                         receiverAccountId = receiver.AccountId;
-                        receiverBankName= receiver.Bank;
-                        receiverName= receiver.Name;
+                        receiverBankName = receiver.Bank;
+                        receiverName = receiver.Name;
                     }
                 }
                 foreach(var account in bankList.Account)
@@ -140,7 +153,7 @@ namespace BankApplicationServices
             {
                 foreach(var account in bank.Account)
                 {
-                    if (accountId == account.AccountId)
+                    if (accountId.Equals(account.AccountId))
                     {
                         transactionList = account.TransactionList;
                     }
@@ -154,7 +167,7 @@ namespace BankApplicationServices
             {
                 foreach (var customerList in bankList.Users)
                 {
-                    if (customerList.Name == customerName && customerList.Password == customerPassword&&customerList.Type==UserTypes.Customer)
+                    if (customerList.Name.Equals(customerName) && customerList.Password.Equals (customerPassword)&&customerList.Type.Equals(UserTypes.Customer))
                     {
                         return true;
                     }
