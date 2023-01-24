@@ -14,6 +14,7 @@ namespace BankApplicationServices
             {
                 return true;
             }
+
             return false;
         }
         public void AddStaff(string staffName,string staffPassword)
@@ -28,7 +29,8 @@ namespace BankApplicationServices
             Staff staffInformation = new Staff();
             foreach(var bankList in BankDataList.BankList)
             {
-                foreach (var staffList in bankList.Users)
+                var staffProperties = bankList.Users.Where(user => user.Name == staffName && user.Password == staffPassword && user.Type == UserTypes.Staff).ToList();
+                foreach (var staffList in staffProperties)
                 {
                     if (staffList.Name == staffName && staffList.Password == staffPassword && staffList.Type==UserTypes.Staff)
                     {

@@ -8,16 +8,15 @@ namespace BankApplicationServices
 {
     public class CustomerServices
     {
+        // Return type should be a boolean for methods starting with "Is" or "Has"
         public string IsCustomerRegistered(string customerName,string customerPassword)
         {
             foreach(var bank in BankDataList.BankList)
             {
-                foreach (var users in bank.Users)
+                var BankUsers = bank.Users.Where(user => user.Name == customerName && user.Password == customerPassword && user.Type == UserTypes.Customer).ToList();
+                foreach (var users in BankUsers)
                 {
-                    if (customerName.Equals(users.Name) && customerPassword.Equals(users.Password) && users.Type.Equals(UserTypes.Customer))
-                    {
-                        return users.AccountId;
-                    }
+                   return users.AccountId;
                 }
             }
             return null;
@@ -38,10 +37,11 @@ namespace BankApplicationServices
         }
         public void DepositMoney(string customerName, string customerPassword, double amount, string currency)
         {
-            string accountId=null,bankName=null;
+            string accountId="",bankName="";
             foreach (var bankList in BankDataList.BankList)
             {
-                foreach (var customerList in bankList.Users)
+                var BankUsers = bankList.Users.Where(user => user.Name == customerName && user.Password == customerPassword && user.Type == UserTypes.Customer).ToList();
+                foreach (var customerList in BankUsers)
                 {
                     if (customerList.Name.Equals(customerName) && customerList.Password.Equals(customerPassword) && customerList.Type == UserTypes.Customer)
                     {
@@ -77,10 +77,11 @@ namespace BankApplicationServices
     
         public void WithDrawMoney(string customerName, string customerPassword, double amount)
         {
-            string accountId = null,bankName=null;
+            string accountId = "",bankName="";
             foreach (var bankList in BankDataList.BankList)
             {
-                foreach (var customerList in bankList.Users)
+                var BankUsers = bankList.Users.Where(user => user.Name == customerName && user.Password == customerPassword && user.Type == UserTypes.Customer).ToList();
+                foreach (var customerList in BankUsers)
                 {
                     if (customerList.Name.Equals(customerName) && customerList.Password.Equals(customerPassword) && customerList.Type.Equals(UserTypes.Customer))
                     {
@@ -102,7 +103,7 @@ namespace BankApplicationServices
         }
         public void TransferFunds(string customerName, string customerPassword, string transferCustomerName, string transferCustomerBankName, double transferAmount)
         {
-            string senderAccountId = null, receiverAccountId = null,senderName=null,receiverName=null,senderBankName=null,receiverBankName=null;
+            string senderAccountId = "", receiverAccountId = "",senderName="",receiverName="",senderBankName="",receiverBankName="";
             foreach (var bankList in BankDataList.BankList)
             {
                 var customerDetails = from customerProperties in bankList.Users where (customerProperties.Name.Equals(customerName) && customerProperties.Password.Equals(customerPassword) && customerProperties.Type==UserTypes.Customer) select customerProperties;
@@ -151,12 +152,10 @@ namespace BankApplicationServices
             List<Transaction> transactionList = new List<Transaction>();
             foreach(var bank in BankDataList.BankList)
             {
-                foreach(var account in bank.Account)
+                var bankAccountId = bank.Account.Where(account => account.AccountId == accountId).ToList();
+                foreach(var account in bankAccountId)
                 {
-                    if (accountId.Equals(account.AccountId))
-                    {
-                        transactionList = account.TransactionList;
-                    }
+                   transactionList = account.TransactionList;  
                 }
             }
             return transactionList;
@@ -165,12 +164,10 @@ namespace BankApplicationServices
         {
             foreach(var bankList in BankDataList.BankList)
             {
-                foreach (var customerList in bankList.Users)
+                var customerProperties = bankList.Users.Where(user => user.Name == customerName && user.Password == customerPassword && user.Type == UserTypes.Customer).ToList();
+                foreach (var customerList in customerProperties)
                 {
-                    if (customerList.Name.Equals(customerName) && customerList.Password.Equals (customerPassword)&&customerList.Type.Equals(UserTypes.Customer))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;

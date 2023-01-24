@@ -13,15 +13,13 @@ namespace BankApplicationServices
         public static double ChargeForSameAccount;
         public static double ChargeForDifferentAccount;
         public void CreateBankAccount(string name,string password,string city,string bank)
-        {                        
-                foreach(var bankList in BankDataList.BankList)
-                {
-                    if (bankList.BankName == bank)
-                    {
-                        bankList.Users.Add(new Customer(name, password, city, bank, IdGenerator.AccountIdPattern(name)));
-                        bankList.Account.Add(new Account(IdGenerator.AccountIdPattern(name), 0));
-                    }
-                }
+        {
+            var bankProperties = BankDataList.BankList.Where(bankName => bankName.BankName == bank).ToList();
+            foreach(var bankList in bankProperties)
+            {
+                bankList.Users.Add(new Customer(name, password, city, bank, IdGenerator.AccountIdPattern(name)));
+                bankList.Account.Add(new Account(IdGenerator.AccountIdPattern(name), 0));
+            }
         }
         public void UpdateDetails(string name,string password,int customerIndex,string newName,string newPassword,int select)
         {
@@ -51,12 +49,10 @@ namespace BankApplicationServices
             Bank bankInformation = new Bank();
             foreach(var bank in BankDataList.BankList)
             {
-                foreach(var customer in bank.Users)
+                var customerProperties = bank.Users.Where(user => user.Name == customerName && user.Password == customerPassword && user.Type == UserTypes.Customer).ToList();
+                foreach(var customer in customerProperties)
                 {
-                    if (customerName == customer.Name && customerPassword == customerPassword && customer.Type == UserTypes.Customer)
-                    {
-                        bankInformation = bank;
-                    }
+                    bankInformation = bank;
                 }
             }
             return bankInformation;
@@ -66,12 +62,10 @@ namespace BankApplicationServices
             List<Transaction> transactionList = new List<Transaction>();
             foreach (var bank in BankDataList.BankList)
             {
-                foreach (var account in bank.Account)
+                var bankAccountId = bank.Account.Where(account => account.AccountId == accountId).ToList();
+                foreach (var account in bankAccountId)
                 {
-                    if (accountId == account.AccountId)
-                    {
-                        transactionList = account.TransactionList;
-                    }
+                    transactionList = account.TransactionList;
                 }
             }
             return transactionList;
@@ -84,24 +78,12 @@ namespace BankApplicationServices
         {
             ChargeForDifferentAccount = amountForDifferentAccount;
         }
-        public void RevertTransaction(string senderName,string recieverName)
+        public void RevertTransaction(string senderAccountId,string receiverAccountId)
         {
-            string senderAccountId = "", receiverAccountId = "";
             double transferAmount=0;
             foreach(var bank in BankDataList.BankList)
             {
-                foreach(var users in bank.Users)
-                {
-                    if(users.Name == senderName && users.Type==UserTypes.Customer)
-                    {
-                        senderAccountId= users.AccountId;
-                    }
-                    if (users.Name == recieverName && users.Type == UserTypes.Customer)
-                    {
-                        receiverAccountId= users.AccountId;
-                    }
-                }
-                foreach(var account in bank.Account)
+                foreach (var account in bank.Account)
                 {
                     if (account.AccountId == senderAccountId)
                     {
